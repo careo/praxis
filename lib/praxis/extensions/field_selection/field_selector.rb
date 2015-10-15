@@ -33,10 +33,16 @@ module Praxis
           end
 
           def self.example(context=Attributor::DEFAULT_ROOT_CONTEXT, **options)
-            self.load(media_type.attributes.keys.sample(3).join(','))
+            fields = if media_type
+              media_type.attributes.keys.sample(3).join(',')
+            else
+              Attributor::FieldSelector.example(context,**options)
+            end
+            self.load(fields)
           end
 
           def self.validate(value, context=Attributor::DEFAULT_ROOT_CONTEXT, _attribute=nil)
+            return [] unless media_type
             instance = self.load(value, context)
             instance.validate(context)
           end
